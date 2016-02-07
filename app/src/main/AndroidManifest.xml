@@ -18,15 +18,10 @@
         <activity android:name=".Activities.MainActivity">
         </activity>
 
-        <receiver android:name=".NewAppWidget">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
-            </intent-filter>
+        <meta-data
+            android:name="com.google.android.nearby.messages.API_KEY"
+            android:value="@string/API_KEY" />
 
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/new_app_widget_info"/>
-        </receiver>
     </application>
 
 </manifest>

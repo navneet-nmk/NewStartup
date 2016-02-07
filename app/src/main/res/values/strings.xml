@@ -5,4 +5,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
+    <string name="API_KEY">AIzaSyAkM0_dNAmPa536eqH7L3PuG58uXdaeG9A</string>
+    <string name="login_with_facebook">Login with Facebook</string>
 </resources>
