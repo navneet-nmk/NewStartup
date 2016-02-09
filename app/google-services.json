@@ -1,0 +1,60 @@
+{
+  "project_info": {
+    "project_id": "bridge-1212",
+    "project_number": "199254020074",
+    "name": "Bridge"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:199254020074:android:6da14f7f2de87b8c",
+        "client_id": "android:com.teenvan.newstartup",
+        "client_type": 1,
+        "android_client_info": {
+          "package_name": "com.teenvan.newstartup"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "199254020074-3mr4a371ojrupgrfc9ko5tno5s4g21q4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.teenvan.newstartup",
+            "certificate_hash": "0E54B614BE274C04A25EEE29FBCBDF2BD6E21922"
+          }
+        },
+        {
+          "client_id": "199254020074-01trv3sofprbvrs330tsbnkris6c8qnh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "cloud_messaging_service": {
+          "status": 2,
+          "apns_config": []
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "199254020074-01trv3sofprbvrs330tsbnkris6c8qnh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "google_signin_service": {
+          "status": 2
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "client_info": [],
+  "ARTIFACT_VERSION": "1"
+}

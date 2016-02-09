@@ -1,26 +1,41 @@
 package com.teenvan.newstartup.Activities;
 
+import android.Manifest;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.nearby.Nearby;
 import com.google.android.gms.nearby.messages.Message;
 import com.google.android.gms.nearby.messages.MessageListener;
 import com.google.android.gms.nearby.messages.Strategy;
 import com.google.android.gms.nearby.messages.SubscribeCallback;
 import com.google.android.gms.nearby.messages.SubscribeOptions;
+import com.google.android.gms.nearby.messages.devices.NearbyDevice;
 import com.teenvan.newstartup.R;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 
 public class MainActivity extends AppCompatActivity implements
@@ -29,29 +44,66 @@ public class MainActivity extends AppCompatActivity implements
     // Declaration of member variables
     private GoogleApiClient mGoogleApiClient;
     private final String TAG = "Bridge.MainActivity";
-    private MessageListener mMessageListener;
     private boolean mResolvingError = false;
-    private static final int REQUEST_RESOLVE_ERROR = 5;
-
+    private static final int REQUEST_RESOLVE_ERROR = 100;
+    private static final int REQUEST_PERMISSION = 42;
+    private ArrayList<NearbyDevice> devices = new ArrayList<>();
+    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initializing the Google API client
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(Nearby.MESSAGES_API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
+       // Referencing the UI elements
 
-        foregorundSubscribeBeacons();
     }
+
+
+    private MessageListener mMessageListener = new MessageListener() {
+        @Override
+        public void onFound(Message message) {
+            // Do something with the message
+            String content = new String(message.getContent());
+            Collections.addAll(devices, message.zzEn());
+
+            if (!devices.isEmpty()) {
+                Log.i(TAG, " Found Device " + devices.get(0).zzEC());
+                Log.i(TAG, " Found Message Content " + content +
+                        " of type " + message.getType());
+                Log.i(TAG, " Found Message namespace" + message.getNamespace());
+            }
+        }
+
+        @Override
+        public void onLost(Message message) {
+            super.onLost(message);
+            Log.i(TAG, " Found Message : " + message.toString());
+        }
+    };
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         Log.d(TAG, "GoogleAPi Client Connected");
+        foregorundSubscribeBeacons();
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                        PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+
+            Location l = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            Log.d(TAG, l.getLatitude() + " "+ l.getLongitude());
     }
 
     @Override
@@ -65,21 +117,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void foregorundSubscribeBeacons() {
-        mMessageListener = new MessageListener() {
-            @Override
-            public void onFound(Message message) {
-                // Do something with the message
-                Log.i(TAG, " Found Message : " + message.toString());
-            }
-
-            @Override
-            public void onLost(Message message) {
-                super.onLost(message);
-                Log.i(TAG, " Found Message : " + message.toString());
-            }
-        };
-
-
         // Subscribe to receive messages
         Log.i(TAG, "Trying to subscribe");
         if (!mGoogleApiClient.isConnected()) {
@@ -96,12 +133,25 @@ public class MainActivity extends AppCompatActivity implements
                         }
                     }).build();
 
-            Nearby.Messages.subscribe(mGoogleApiClient, mMessageListener, options)
+            Nearby.Messages.subscribe(mGoogleApiClient, getPendingIntent(), options)
                     .setResultCallback(new ResultCallback<Status>() {
                         @Override
                         public void onResult(Status status) {
                             if (status.isSuccess()) {
                                 Log.i(TAG, "Subscribed successfully.");
+                                mMessageListener = new MessageListener() {
+                                    @Override
+                                    public void onFound(Message message) {
+                                        // Do something with the message
+                                        Log.i(TAG, " Found Message : " + message.toString());
+                                    }
+
+                                    @Override
+                                    public void onLost(Message message) {
+                                        super.onLost(message);
+                                        Log.i(TAG, " Found Message : " + message.toString());
+                                    }
+                                };
                             } else {
                                 Log.i(TAG, "Could not subscribe.");
                                 // Check whether consent was given;
@@ -150,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements
             mResolvingError = false;
             if (resultCode == RESULT_OK) {
                 // Execute the pending subscription and publication tasks here.
-               foregorundSubscribeBeacons();
+                foregorundSubscribeBeacons();
             } else if (resultCode == RESULT_CANCELED) {
                 // User declined to opt-in. Reset application state here.
             } else {
@@ -159,4 +209,53 @@ public class MainActivity extends AppCompatActivity implements
             }
         }
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //Initiate connection to Play Services
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addApi(Nearby.MESSAGES_API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+        mGoogleApiClient.connect();
+
+        //The location permission is required on API 23+ to obtain BLE scan results
+        int result = ActivityCompat
+                .checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
+        if (result != PackageManager.PERMISSION_GRANTED) {
+            //Ask for the location permission
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                    REQUEST_PERMISSION);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        //Tear down Play Services connection
+        if (mGoogleApiClient.isConnected()) {
+            Log.d(TAG, "Un-subscribing…");
+
+            //mGoogleApiClient.disconnect();
+        }
+    }
+
+    private PendingIntent getPendingIntent() {
+        return PendingIntent.getService(getApplicationContext(), 0,
+                getBackgroundSubscribeServiceIntent(), PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    private Intent getBackgroundSubscribeServiceIntent() {
+        return new Intent(getApplicationContext(), BackgroundSubscribeIntentService.class);
+    }
+
+
+
+
+
+
 }

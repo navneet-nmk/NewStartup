@@ -18,8 +18,18 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/pager"
         android:layout_centerHorizontal="true"
+        android:id="@+id/fbLoginButton"
         android:layout_marginTop="@dimen/activity_horizontal_margin"
         android:text="@string/login_with_facebook"/>
+
+    <Button
+        android:id="@+id/googleLoginButton"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fbLoginButton"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        android:text="@string/login_with_google"/>
 
 
 
