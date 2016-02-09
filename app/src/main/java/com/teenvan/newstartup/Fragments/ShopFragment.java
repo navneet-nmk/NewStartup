@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.marshalchen.ultimaterecyclerview.UltimateRecyclerView;
 import com.teenvan.newstartup.R;
 
 /**
@@ -16,16 +17,19 @@ import com.teenvan.newstartup.R;
 public class ShopFragment extends Fragment {
 
     // Declaration of member variables
-    private TextView mAppTitle;
+    private UltimateRecyclerView mShopsList;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        ViewGroup rootView = (ViewGroup)inflater.inflate(R.layout.fragment_page_one, container,false);
+        ViewGroup rootView = (ViewGroup)inflater.inflate(R.layout.fragment_shops, container,false);
 
         // Referencing the UI elements
-        mAppTitle = (TextView)rootView.findViewById(R.id.appTitle);
+        mShopsList = (UltimateRecyclerView)rootView.findViewById(R.id.shops_list);
+
+
+
     return rootView;
 
     }

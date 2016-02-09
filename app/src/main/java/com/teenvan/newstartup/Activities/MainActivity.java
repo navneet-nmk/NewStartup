@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements
 
         // Initializing and adding fragments
         mShopFragment = new ShopFragment();
+        mDealsFragment =  new DealsFragment();
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fragment_container,mShopFragment).commit();
 
@@ -256,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements
                 Log.d(TAG, "Stores selected");
                 break;
             case 2:
-                DealsFragment mDealsFragment = new DealsFragment();
+
                 transaction.replace(R.id.fragment_container, mDealsFragment);
                 transaction.addToBackStack(null);
                 transaction.commit();

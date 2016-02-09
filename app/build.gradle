@@ -36,6 +36,9 @@ dependencies {
 
     // Event Bus
     compile 'org.greenrobot:eventbus:3.0.0'
+
+    //Recycler View Library
+    compile 'com.marshalchen.ultimaterecyclerview:library:0.3.18'
 }
 
 apply plugin: 'com.google.gms.google-services'
