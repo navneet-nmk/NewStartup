@@ -15,14 +15,11 @@ public class BackgroundSubscribeIntentService extends IntentService {
 
     // Declaration of member variables
     private final String TAG = BackgroundSubscribeIntentService.class.getSimpleName();
-    /**
-     * Creates an IntentService.  Invoked by your subclass's constructor.
-     *
-     * @param name Used to name the worker thread, important only for debugging.
-     */
-    public BackgroundSubscribeIntentService(String name) {
-        super(name);
+
+    public BackgroundSubscribeIntentService() {
+        super("NearbyIntent");
     }
+
 
     @Override
     protected void onHandleIntent(Intent intent) {

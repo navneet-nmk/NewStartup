@@ -9,11 +9,14 @@ import android.location.Location;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -32,14 +35,18 @@ import com.google.android.gms.nearby.messages.Strategy;
 import com.google.android.gms.nearby.messages.SubscribeCallback;
 import com.google.android.gms.nearby.messages.SubscribeOptions;
 import com.google.android.gms.nearby.messages.devices.NearbyDevice;
+import com.teenvan.newstartup.Fragments.DealsFragment;
+import com.teenvan.newstartup.Fragments.FirstFragment;
+import com.teenvan.newstartup.Fragments.ShopFragment;
 import com.teenvan.newstartup.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 
+
 public class MainActivity extends AppCompatActivity implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, TabLayout.OnTabSelectedListener {
 
     // Declaration of member variables
     private GoogleApiClient mGoogleApiClient;
@@ -47,8 +54,10 @@ public class MainActivity extends AppCompatActivity implements
     private boolean mResolvingError = false;
     private static final int REQUEST_RESOLVE_ERROR = 100;
     private static final int REQUEST_PERMISSION = 42;
-    private ArrayList<NearbyDevice> devices = new ArrayList<>();
     private Toolbar mToolbar;
+    private TabLayout mTabLayout;
+    private ShopFragment mShopFragment;
+    private DealsFragment mDealsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,31 +65,25 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
 
        // Referencing the UI elements
+        mToolbar = (Toolbar)findViewById(R.id.toolbar);
+        mTabLayout = (TabLayout)findViewById(R.id.tabLayout);
+
+
+        setSupportActionBar(mToolbar);
+        // Setting the tabs
+        mTabLayout.addTab(mTabLayout.newTab().setText("Stores"));
+        mTabLayout.addTab(mTabLayout.newTab().setText("Deals"));
+
+        mTabLayout.setOnTabSelectedListener(this);
+
+        // Initializing and adding fragments
+        mShopFragment = new ShopFragment();
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.fragment_container,mShopFragment).commit();
 
     }
 
 
-    private MessageListener mMessageListener = new MessageListener() {
-        @Override
-        public void onFound(Message message) {
-            // Do something with the message
-            String content = new String(message.getContent());
-            Collections.addAll(devices, message.zzEn());
-
-            if (!devices.isEmpty()) {
-                Log.i(TAG, " Found Device " + devices.get(0).zzEC());
-                Log.i(TAG, " Found Message Content " + content +
-                        " of type " + message.getType());
-                Log.i(TAG, " Found Message namespace" + message.getNamespace());
-            }
-        }
-
-        @Override
-        public void onLost(Message message) {
-            super.onLost(message);
-            Log.i(TAG, " Found Message : " + message.toString());
-        }
-    };
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
@@ -139,19 +142,6 @@ public class MainActivity extends AppCompatActivity implements
                         public void onResult(Status status) {
                             if (status.isSuccess()) {
                                 Log.i(TAG, "Subscribed successfully.");
-                                mMessageListener = new MessageListener() {
-                                    @Override
-                                    public void onFound(Message message) {
-                                        // Do something with the message
-                                        Log.i(TAG, " Found Message : " + message.toString());
-                                    }
-
-                                    @Override
-                                    public void onLost(Message message) {
-                                        super.onLost(message);
-                                        Log.i(TAG, " Found Message : " + message.toString());
-                                    }
-                                };
                             } else {
                                 Log.i(TAG, "Could not subscribe.");
                                 // Check whether consent was given;
@@ -254,8 +244,41 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
+    @Override
+    public void onTabSelected(TabLayout.Tab tab) {
+        int position = tab.getPosition();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        switch(position){
+            case 1:
+                transaction.replace(R.id.fragment_container, mShopFragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
+                Log.d(TAG, "Stores selected");
+                break;
+            case 2:
+                DealsFragment mDealsFragment = new DealsFragment();
+                transaction.replace(R.id.fragment_container, mDealsFragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
+                Log.d(TAG, " Deals selected");
+                break;
+            default:
+                transaction.replace(R.id.fragment_container, mShopFragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
+                Log.d(TAG, "Stores selected");
+                break;
 
+        }
+    }
 
+    @Override
+    public void onTabUnselected(TabLayout.Tab tab) {
 
+    }
 
+    @Override
+    public void onTabReselected(TabLayout.Tab tab) {
+
+    }
 }
