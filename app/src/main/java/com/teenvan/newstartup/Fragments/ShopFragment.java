@@ -26,7 +26,7 @@ public class ShopFragment extends Fragment {
         ViewGroup rootView = (ViewGroup)inflater.inflate(R.layout.fragment_shops, container,false);
 
         // Referencing the UI elements
-        mShopsList = (UltimateRecyclerView)rootView.findViewById(R.id.shops_list);
+        mShopsList = (UltimateRecyclerView)rootView.findViewById(R.id.shopsList);
 
 
 

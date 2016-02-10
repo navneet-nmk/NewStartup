@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.teenvan.newstartup.Model.Shop;
 import com.teenvan.newstartup.R;
 
 import java.util.ArrayList;
@@ -20,10 +21,11 @@ import java.util.List;
 public class ShopListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     // Declaration of member variables
     private Context mContext;
+    private ArrayList<Shop> mShops;
 
-    ShopListAdapter(
+    ShopListAdapter(ArrayList<Shop> mShops,
                     Context context){
-
+        this.mShops = mShops;
         mContext = context;
     }
 
@@ -31,7 +33,7 @@ public class ShopListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.perk_card_layout, parent,
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.shop_list_card, parent,
                     false);
             return new VHItem(v);
 
@@ -57,6 +59,7 @@ public class ShopListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public static class VHItem extends RecyclerView.ViewHolder {
 
+        // Declaration of member variables
 
         VHItem(View itemView) {
             super(itemView);
