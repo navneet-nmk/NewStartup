@@ -56,8 +56,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final int REQUEST_PERMISSION = 42;
     private Toolbar mToolbar;
     private TabLayout mTabLayout;
-    private ShopFragment mShopFragment;
-    private DealsFragment mDealsFragment;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,10 +76,9 @@ public class MainActivity extends AppCompatActivity implements
         mTabLayout.setOnTabSelectedListener(this);
 
         // Initializing and adding fragments
-        mShopFragment = new ShopFragment();
-        mDealsFragment =  new DealsFragment();
+        if(savedInstanceState != null)
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragment_container,mShopFragment).commit();
+                .add(R.id.fragment_container,new ShopFragment()).commit();
 
     }
 
@@ -106,8 +104,9 @@ public class MainActivity extends AppCompatActivity implements
             return;
         }
 
-            Location l = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            Log.d(TAG, l.getLatitude() + " "+ l.getLongitude());
+//            Location l = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+//            if(l!=null)
+//            Log.d(TAG, l.getLatitude() + " "+ l.getLongitude());
     }
 
     @Override
@@ -250,24 +249,17 @@ public class MainActivity extends AppCompatActivity implements
         int position = tab.getPosition();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         switch(position){
-            case 1:
-                transaction.replace(R.id.fragment_container, mShopFragment);
+            case 0:
+                transaction.replace(R.id.fragment_container, new ShopFragment());
                 transaction.addToBackStack(null);
                 transaction.commit();
                 Log.d(TAG, "Stores selected");
                 break;
-            case 2:
-
-                transaction.replace(R.id.fragment_container, mDealsFragment);
+            case 1:
+                transaction.replace(R.id.fragment_container, new DealsFragment());
                 transaction.addToBackStack(null);
                 transaction.commit();
                 Log.d(TAG, " Deals selected");
-                break;
-            default:
-                transaction.replace(R.id.fragment_container, mShopFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
-                Log.d(TAG, "Stores selected");
                 break;
 
         }
@@ -280,6 +272,24 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onTabReselected(TabLayout.Tab tab) {
+        int position = tab.getPosition();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        switch(position){
+            case 0:
+                transaction.replace(R.id.fragment_container, new ShopFragment());
+                transaction.addToBackStack(null);
+                transaction.commit();
+                Log.d(TAG, "Stores selected");
+                break;
+            case 1:
+                transaction.replace(R.id.fragment_container, new DealsFragment());
+                transaction.addToBackStack(null);
+                transaction.commit();
+                Log.d(TAG, " Deals selected");
+                break;
 
+        }
     }
+
+
 }

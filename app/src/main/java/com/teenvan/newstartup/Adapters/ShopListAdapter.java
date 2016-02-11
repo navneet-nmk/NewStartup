@@ -1,19 +1,17 @@
 package com.teenvan.newstartup.Adapters;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.teenvan.newstartup.Model.Shop;
 import com.teenvan.newstartup.R;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by navneet on 30/10/15.
@@ -23,8 +21,8 @@ public class ShopListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private Context mContext;
     private ArrayList<Shop> mShops;
 
-    ShopListAdapter(ArrayList<Shop> mShops,
-                    Context context){
+    public ShopListAdapter(ArrayList<Shop> mShops,
+                           Context context){
         this.mShops = mShops;
         mContext = context;
     }
@@ -45,6 +43,8 @@ public class ShopListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
       if(holder instanceof VHItem){
             VHItem item = (VHItem)holder;
 
+            item.mShopName.setText(mShops.get(position).getName());
+            item.mShopDistance.setText(mShops.get(position).getDistance()+ " Km");
         }
 
 
@@ -53,18 +53,22 @@ public class ShopListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public int getItemCount() {
-        return 0;
+        return mShops.size();
     }
 
 
     public static class VHItem extends RecyclerView.ViewHolder {
 
         // Declaration of member variables
+        private TextView mShopName;
+        private TextView mShopDistance;
+        private ImageView mShopImage;
 
         VHItem(View itemView) {
             super(itemView);
-
-
+            mShopName = (TextView)itemView.findViewById(R.id.storeText);
+            mShopDistance = (TextView)itemView.findViewById(R.id.storeDistanceText);
+            mShopImage = (ImageView)itemView.findViewById(R.id.storeImage);
         }
     }
 

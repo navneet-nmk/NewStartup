@@ -6,6 +6,8 @@
     <dimen name="storeTextSize">20sp</dimen>
     <dimen name="viewPagerMainHeight">300dp</dimen>
     <dimen name="storeListItemPadding">5dp</dimen>
+    <dimen name="storeImageSize">40dp</dimen>
+    <dimen name="cardElevationLevel">5dp</dimen>
 
     <!--
 Refer to App Widget Documentation for margin information

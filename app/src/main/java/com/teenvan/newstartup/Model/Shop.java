@@ -6,42 +6,37 @@ package com.teenvan.newstartup.Model;
 public class Shop {
 
     // Declaration of member variables
-    private String shopName;
-    private String shopAddress;
-    private int walkinPoints;
-    private Double storeDistance;
+     String name;
+     String address;
+     Double distance;
+     String image;
 
-    public String getShopAddress() {
-        return shopAddress;
+    public String getAddress() {
+        return address;
     }
 
-    public void setShopAddress(String shopAddress) {
-        this.shopAddress = shopAddress;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
-    public String getShopName() {
-        return shopName;
+    public String getImageUrl(){
+        return image;
     }
 
-    public void setShopName(String shopName) {
-        this.shopName = shopName;
+    public String getName() {
+        return name;
     }
 
-
-    public int getWalkinPoints() {
-        return walkinPoints;
-    }
-
-    public void setWalkinPoints(int walkinPoints) {
-        this.walkinPoints = walkinPoints;
+    public void setName(String name) {
+        this.name = name;
     }
 
 
-    public Double getStoreDistance() {
-        return storeDistance;
+    public Double getDistance() {
+        return distance;
     }
 
-    public void setStoreDistance(Double storeDistance) {
-        this.storeDistance = storeDistance;
+    public void setDistance(Double distance) {
+        this.distance = distance;
     }
 }
