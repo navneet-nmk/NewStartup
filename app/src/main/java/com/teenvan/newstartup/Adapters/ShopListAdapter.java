@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.teenvan.newstartup.Model.Shop;
 import com.teenvan.newstartup.R;
 
@@ -45,6 +46,7 @@ public class ShopListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             item.mShopName.setText(mShops.get(position).getName());
             item.mShopDistance.setText(mShops.get(position).getDistance()+ " Km");
+          Glide.with(mContext).load(mShops.get(position).getImageUrl()).into(item.mShopImage);
         }
 
 
