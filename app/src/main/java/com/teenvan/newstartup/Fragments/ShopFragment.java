@@ -1,5 +1,8 @@
 package com.teenvan.newstartup.Fragments;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -9,16 +12,22 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.teenvan.newstartup.Adapters.ShopListAdapter;
 import com.teenvan.newstartup.Api.BridgeApi;
 import com.teenvan.newstartup.Model.Shop;
-import com.teenvan.newstartup.Model.Shops;
 import com.teenvan.newstartup.R;
+import com.teenvan.newstartup.Utils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import okhttp3.Cache;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -37,6 +46,9 @@ public class ShopFragment extends Fragment implements Callback<ArrayList<Shop>> 
     private ArrayList<Shop> mShops;
     private static final String baseUrl = "https://bridge-startup.herokuapp.com/api/";
     private static final String TAG = ShopFragment.class.getSimpleName();
+    private Double lat = 26.67,longi= 78.75;
+    private BridgeApi bridgeApi;
+    private Context context = getActivity();
 
     @Nullable
     @Override
@@ -44,14 +56,33 @@ public class ShopFragment extends Fragment implements Callback<ArrayList<Shop>> 
                              @Nullable Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup)inflater.inflate(R.layout.fragment_shops, container,false);
 
+
+
+        //setup cache
+        File httpCacheDirectory = new File(getActivity().getCacheDir(), "responses");
+        int cacheSize = 10 * 1024 * 1024; // 10 MiB
+        Cache cache = new Cache(httpCacheDirectory, cacheSize);
+
+        OkHttpClient client = new OkHttpClient.Builder().cache(cache).
+                addInterceptor(REWRITE_CACHE_CONTROL_INTERCEPTOR).build();
+        //add cache to the client
+
+
+
         //Initialize Retrofit
         Retrofit retrofit = new Retrofit.Builder()
+                                .client(client)
                                 .baseUrl(baseUrl)
                                 .addConverterFactory(GsonConverterFactory.create())
                                 .build();
-        BridgeApi bridgeApi= retrofit.create(BridgeApi.class);
-        Call<ArrayList<Shop>> call = bridgeApi.loadShops();
-        call.enqueue(this);
+         bridgeApi= retrofit.create(BridgeApi.class);
+        if(lat ==null || longi == null){
+            Toast.makeText(getActivity(),"Enable location to get nearby stores",Toast.LENGTH_SHORT)
+                    .show();
+        }else {
+            Call<ArrayList<Shop>> call = bridgeApi.loadShops(lat,longi);
+            call.enqueue(this);
+        }
 
         // Referencing the UI elements
         mShopsList = (RecyclerView)rootView.findViewById(R.id.shopsList);
@@ -73,13 +104,6 @@ public class ShopFragment extends Fragment implements Callback<ArrayList<Shop>> 
         Log.d(TAG, call.toString());
         mShops = response.body();
         Log.d(TAG, mShops.get(0).getName());
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ShopListAdapter adapter = new ShopListAdapter(mShops,getActivity());
-                mShopsList.setAdapter(adapter);
-            }
-        });
         ShopListAdapter adapter = new ShopListAdapter(mShops,getActivity());
         mShopsList.setAdapter(adapter);
     }
@@ -88,6 +112,34 @@ public class ShopFragment extends Fragment implements Callback<ArrayList<Shop>> 
     public void onFailure(Call<ArrayList<Shop>> call, Throwable t) {
         Log.d(TAG,t.getMessage()+ t.getLocalizedMessage());
     }
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager
+                .getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    private final Interceptor REWRITE_CACHE_CONTROL_INTERCEPTOR = new Interceptor() {
+        @Override
+        public okhttp3.Response intercept(Chain chain) throws IOException {
+            okhttp3.Response originalResponse = chain.proceed(chain.request());
+            if (isNetworkAvailable()) {
+                int maxAge = 60; // read from cache for 1 minute
+                return originalResponse.newBuilder()
+                        .header("Cache-Control", "public, max-age=" + maxAge)
+                        .build();
+            } else {
+                int maxStale = 60 * 60 * 24 * 28; // tolerate 4-weeks stale
+                return originalResponse.newBuilder()
+                        .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
+                        .build();
+            }
+        }
+
+    };
+
+
 
 
 }

@@ -10,6 +10,7 @@ public class Shop {
      String address;
      Double distance;
      String image;
+     int points;
 
     public String getAddress() {
         return address;
@@ -25,6 +26,14 @@ public class Shop {
 
     public String getName() {
         return name;
+    }
+
+    public int getPoints(){
+        return points;
+    }
+
+    public void setPoints(int p){
+        points = p;
     }
 
     public void setName(String name) {

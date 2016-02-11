@@ -45,7 +45,13 @@ public class ShopListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             VHItem item = (VHItem)holder;
 
             item.mShopName.setText(mShops.get(position).getName());
-            item.mShopDistance.setText(mShops.get(position).getDistance()+ " Km");
+            if(mShops.get(position).getDistance() != 0.0){
+                item.mShopDistance.setText(mShops.get(position).getDistance()+ " Km");
+            }else{
+                item.mShopDistance.setText("Far away");
+            }
+
+            item.mShopPoints.setText(mShops.get(position).getPoints()+ " Walk-In Points");
           Glide.with(mContext).load(mShops.get(position).getImageUrl()).into(item.mShopImage);
         }
 
@@ -64,15 +70,21 @@ public class ShopListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         // Declaration of member variables
         private TextView mShopName;
         private TextView mShopDistance;
+        private TextView mShopPoints;
         private ImageView mShopImage;
 
         VHItem(View itemView) {
             super(itemView);
             mShopName = (TextView)itemView.findViewById(R.id.storeText);
             mShopDistance = (TextView)itemView.findViewById(R.id.storeDistanceText);
+            mShopPoints = (TextView)itemView.findViewById(R.id.storePointsText);
             mShopImage = (ImageView)itemView.findViewById(R.id.storeImage);
+
         }
     }
+
+
+
 
 
 

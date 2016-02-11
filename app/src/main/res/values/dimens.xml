@@ -3,7 +3,7 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="textSize">50sp</dimen>
-    <dimen name="storeTextSize">20sp</dimen>
+    <dimen name="storeTextSize">25sp</dimen>
     <dimen name="viewPagerMainHeight">300dp</dimen>
     <dimen name="storeListItemPadding">5dp</dimen>
     <dimen name="storeImageSize">40dp</dimen>

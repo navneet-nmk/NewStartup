@@ -40,6 +40,8 @@ import com.teenvan.newstartup.Fragments.FirstFragment;
 import com.teenvan.newstartup.Fragments.ShopFragment;
 import com.teenvan.newstartup.R;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -58,10 +60,13 @@ public class MainActivity extends AppCompatActivity implements
     private TabLayout mTabLayout;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
 
        // Referencing the UI elements
         mToolbar = (Toolbar)findViewById(R.id.toolbar);
@@ -76,18 +81,25 @@ public class MainActivity extends AppCompatActivity implements
         mTabLayout.setOnTabSelectedListener(this);
 
         // Initializing and adding fragments
-        if(savedInstanceState != null)
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fragment_container,new ShopFragment()).commit();
 
     }
 
-
+    private MessageListener mMessageListener = new MessageListener() {
+        @Override
+        public void onFound(Message message) {
+            Log.d(TAG, message.toString());
+        }
+    };
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+
         Log.d(TAG, "GoogleAPi Client Connected");
+
         foregorundSubscribeBeacons();
+
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) !=
                 PackageManager.PERMISSION_GRANTED &&
@@ -104,9 +116,9 @@ public class MainActivity extends AppCompatActivity implements
             return;
         }
 
-//            Location l = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-//            if(l!=null)
-//            Log.d(TAG, l.getLatitude() + " "+ l.getLongitude());
+            Location l = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            if(l!=null)
+            Log.d(TAG, l.getLatitude() + " "+ l.getLongitude());
     }
 
     @Override
@@ -136,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements
                         }
                     }).build();
 
-            Nearby.Messages.subscribe(mGoogleApiClient, getPendingIntent(), options)
+            Nearby.Messages.subscribe(mGoogleApiClient, mMessageListener, options)
                     .setResultCallback(new ResultCallback<Status>() {
                         @Override
                         public void onResult(Status status) {
@@ -203,6 +215,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onStart() {
         super.onStart();
+
         //Initiate connection to Play Services
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
@@ -236,7 +249,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private PendingIntent getPendingIntent() {
         return PendingIntent.getService(getApplicationContext(), 0,
-                getBackgroundSubscribeServiceIntent(), PendingIntent.FLAG_UPDATE_CURRENT);
+                getBackgroundSubscribeServiceIntent(), PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
     private Intent getBackgroundSubscribeServiceIntent() {
@@ -272,24 +285,9 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onTabReselected(TabLayout.Tab tab) {
-        int position = tab.getPosition();
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        switch(position){
-            case 0:
-                transaction.replace(R.id.fragment_container, new ShopFragment());
-                transaction.addToBackStack(null);
-                transaction.commit();
-                Log.d(TAG, "Stores selected");
-                break;
-            case 1:
-                transaction.replace(R.id.fragment_container, new DealsFragment());
-                transaction.addToBackStack(null);
-                transaction.commit();
-                Log.d(TAG, " Deals selected");
-                break;
-
-        }
     }
+
+
 
 
 }
