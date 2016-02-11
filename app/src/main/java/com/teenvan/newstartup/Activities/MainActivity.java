@@ -2,10 +2,13 @@ package com.teenvan.newstartup.Activities;
 
 import android.Manifest;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -35,20 +38,32 @@ import com.google.android.gms.nearby.messages.Strategy;
 import com.google.android.gms.nearby.messages.SubscribeCallback;
 import com.google.android.gms.nearby.messages.SubscribeOptions;
 import com.google.android.gms.nearby.messages.devices.NearbyDevice;
+import com.teenvan.newstartup.Api.BridgeApi;
 import com.teenvan.newstartup.Fragments.DealsFragment;
 import com.teenvan.newstartup.Fragments.FirstFragment;
 import com.teenvan.newstartup.Fragments.ShopFragment;
+import com.teenvan.newstartup.Model.Shop;
 import com.teenvan.newstartup.R;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import okhttp3.Cache;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class MainActivity extends AppCompatActivity implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, TabLayout.OnTabSelectedListener {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, TabLayout.OnTabSelectedListener, Callback<ArrayList<Shop>> {
 
     // Declaration of member variables
     private GoogleApiClient mGoogleApiClient;
@@ -58,6 +73,9 @@ public class MainActivity extends AppCompatActivity implements
     private static final int REQUEST_PERMISSION = 42;
     private Toolbar mToolbar;
     private TabLayout mTabLayout;
+    private static final String baseUrl = "https://bridge-startup.herokuapp.com/api/";
+    private Double lat = 26.67,longi= 78.75;
+    private BridgeApi bridgeApi;
 
 
 
@@ -80,9 +98,41 @@ public class MainActivity extends AppCompatActivity implements
 
         mTabLayout.setOnTabSelectedListener(this);
 
+
+
+        //setup cache
+        File httpCacheDirectory = new File(getCacheDir(), "responses");
+        int cacheSize = 10 * 1024 * 1024; // 10 MiB
+        Cache cache = new Cache(httpCacheDirectory, cacheSize);
+
+        OkHttpClient client = new OkHttpClient.Builder().cache(cache).
+                addInterceptor(REWRITE_CACHE_CONTROL_INTERCEPTOR).build();
+
+
+
+
+        //Initialize Retrofit
+        Retrofit retrofit = new Retrofit.Builder()
+                .client(client)
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        bridgeApi= retrofit.create(BridgeApi.class);
+        if(lat ==null || longi == null){
+            Toast.makeText(this,"Enable location to get nearby stores",Toast.LENGTH_SHORT)
+                    .show();
+        }else {
+            Call<ArrayList<Shop>> call = bridgeApi.loadShops(lat,longi);
+            call.enqueue(this);
+        }
+
+
+
         // Initializing and adding fragments
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fragment_container,new ShopFragment()).commit();
+
+
 
     }
 
@@ -288,6 +338,42 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
+    @Override
+    public void onResponse(Call<ArrayList<Shop>> call, Response<ArrayList<Shop>> response) {
 
+    }
+
+    @Override
+    public void onFailure(Call<ArrayList<Shop>> call, Throwable t) {
+
+    }
+
+
+    private final Interceptor REWRITE_CACHE_CONTROL_INTERCEPTOR = new Interceptor() {
+        @Override
+        public okhttp3.Response intercept(Chain chain) throws IOException {
+            okhttp3.Response originalResponse = chain.proceed(chain.request());
+            if (isNetworkAvailable()) {
+                int maxAge = 60; // read from cache for 1 minute
+                return originalResponse.newBuilder()
+                        .header("Cache-Control", "public, max-age=" + maxAge)
+                        .build();
+            } else {
+                int maxStale = 60 * 60 * 24 * 28; // tolerate 4-weeks stale
+                return originalResponse.newBuilder()
+                        .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
+                        .build();
+            }
+        }
+
+    };
+
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+             getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager
+                .getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
 
 }

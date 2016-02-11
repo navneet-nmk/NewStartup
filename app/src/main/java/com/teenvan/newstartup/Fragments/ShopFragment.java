@@ -58,31 +58,9 @@ public class ShopFragment extends Fragment implements Callback<ArrayList<Shop>> 
 
 
 
-        //setup cache
-        File httpCacheDirectory = new File(getActivity().getCacheDir(), "responses");
-        int cacheSize = 10 * 1024 * 1024; // 10 MiB
-        Cache cache = new Cache(httpCacheDirectory, cacheSize);
-
-        OkHttpClient client = new OkHttpClient.Builder().cache(cache).
-                addInterceptor(REWRITE_CACHE_CONTROL_INTERCEPTOR).build();
         //add cache to the client
 
 
-
-        //Initialize Retrofit
-        Retrofit retrofit = new Retrofit.Builder()
-                                .client(client)
-                                .baseUrl(baseUrl)
-                                .addConverterFactory(GsonConverterFactory.create())
-                                .build();
-         bridgeApi= retrofit.create(BridgeApi.class);
-        if(lat ==null || longi == null){
-            Toast.makeText(getActivity(),"Enable location to get nearby stores",Toast.LENGTH_SHORT)
-                    .show();
-        }else {
-            Call<ArrayList<Shop>> call = bridgeApi.loadShops(lat,longi);
-            call.enqueue(this);
-        }
 
         // Referencing the UI elements
         mShopsList = (RecyclerView)rootView.findViewById(R.id.shopsList);
@@ -112,32 +90,7 @@ public class ShopFragment extends Fragment implements Callback<ArrayList<Shop>> 
     public void onFailure(Call<ArrayList<Shop>> call, Throwable t) {
         Log.d(TAG,t.getMessage()+ t.getLocalizedMessage());
     }
-    public boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager)
-                getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager
-                .getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
 
-    private final Interceptor REWRITE_CACHE_CONTROL_INTERCEPTOR = new Interceptor() {
-        @Override
-        public okhttp3.Response intercept(Chain chain) throws IOException {
-            okhttp3.Response originalResponse = chain.proceed(chain.request());
-            if (isNetworkAvailable()) {
-                int maxAge = 60; // read from cache for 1 minute
-                return originalResponse.newBuilder()
-                        .header("Cache-Control", "public, max-age=" + maxAge)
-                        .build();
-            } else {
-                int maxStale = 60 * 60 * 24 * 28; // tolerate 4-weeks stale
-                return originalResponse.newBuilder()
-                        .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
-                        .build();
-            }
-        }
-
-    };
 
 
 
