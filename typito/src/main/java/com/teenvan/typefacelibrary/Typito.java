@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.support.v4.app.Fragment;
 import android.graphics.Typeface;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.lang.reflect.Field;
@@ -30,7 +31,13 @@ public class Typito {
                     TextView value = (TextView) field.get(activity);
                     Typeface tv = Typeface.createFromAsset(activity.getAssets(),path);
                     value.setTypeface(tv);
-                    Log.d(TAG, "Set the typeface");
+                    Log.d(TAG, "Set the text typeface");
+                }
+                if(Button.class.isAssignableFrom(cl)){
+                    Button value = (Button)field.get(activity);
+                    Typeface tv = Typeface.createFromAsset(activity.getAssets(),path);
+                    value.setTypeface(tv);
+                    Log.d(TAG, "Set the button typeface");
                 }
 
             }
@@ -57,9 +64,17 @@ public class Typito {
 
                 if (TextView.class.isAssignableFrom(cl)) {
                     TextView value = (TextView) field.get(fragment);
+                    assert setter != null;
                     Typeface tv = Typeface.createFromAsset(activity.getAssets(),setter.path());
                     value.setTypeface(tv);
-                    Log.d(TAG, "Set the typeface");
+                    Log.d(TAG, "Set the text typeface");
+                }
+                if(Button.class.isAssignableFrom(cl)){
+                    Button value = (Button)field.get(fragment);
+                    assert setter != null;
+                    Typeface tv = Typeface.createFromAsset(activity.getAssets(),setter.path());
+                    value.setTypeface(tv);
+                    Log.d(TAG, "Set the button typeface");
                 }
 
             }
@@ -86,7 +101,13 @@ public class Typito {
                     TextView value = (TextView) field.get(activity);
                     Typeface tv = Typeface.createFromAsset(activity.getAssets(),setter.path());
                     value.setTypeface(tv);
-                    Log.d(TAG, "Set the typeface");
+                    Log.d(TAG, "Set the text typeface");
+                }
+                if(Button.class.isAssignableFrom(cl)){
+                    Button value = (Button)field.get(activity);
+                    Typeface tv = Typeface.createFromAsset(activity.getAssets(), setter.path());
+                    value.setTypeface(tv);
+                    Log.d(TAG,"Set the button typeface");
                 }
 
             }
@@ -112,7 +133,13 @@ public class Typito {
                     TextView value = (TextView) field.get(fragment);
                     Typeface tv = Typeface.createFromAsset(activity.getAssets(),path);
                     value.setTypeface(tv);
-                    Log.d(TAG, "Set the typeface");
+                    Log.d(TAG, "Set the text typeface");
+                }
+                if(Button.class.isAssignableFrom(cl)){
+                    Button value = (Button)field.get(fragment);
+                    Typeface tv = Typeface.createFromAsset(activity.getAssets(),path);
+                    value.setTypeface(tv);
+                    Log.d(TAG,"Set the button typeface");
                 }
 
             }

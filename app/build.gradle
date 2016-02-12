@@ -54,7 +54,7 @@ dependencies {
     //Image Caching Library
     compile 'com.github.bumptech.glide:glide:3.7.0'
 
-    compile project(":typefacelibrary")
+    compile project(':typito')
 }
 
 apply plugin: 'com.google.gms.google-services'

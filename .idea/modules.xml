@@ -4,7 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/NewStartup.iml" filepath="$PROJECT_DIR$/NewStartup.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/typefacelibrary/typefacelibrary.iml" filepath="$PROJECT_DIR$/typefacelibrary/typefacelibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/typito/typefacelibrary.iml" filepath="$PROJECT_DIR$/typito/typefacelibrary.iml" />
     </modules>
   </component>
 </project>
