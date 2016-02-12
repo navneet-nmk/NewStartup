@@ -44,6 +44,7 @@ import com.teenvan.newstartup.Fragments.FirstFragment;
 import com.teenvan.newstartup.Fragments.ShopFragment;
 import com.teenvan.newstartup.Model.Shop;
 import com.teenvan.newstartup.R;
+import com.teenvan.typefacelibrary.TypefaceSetter;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -76,6 +77,8 @@ public class MainActivity extends AppCompatActivity implements
     private static final String baseUrl = "https://bridge-startup.herokuapp.com/api/";
     private Double lat = 26.67,longi= 78.75;
     private BridgeApi bridgeApi;
+    private ArrayList<Shop> mShops = new ArrayList<>();
+    private int tabPosition = 0;
 
 
 
@@ -83,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
 
 
@@ -118,19 +122,16 @@ public class MainActivity extends AppCompatActivity implements
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         bridgeApi= retrofit.create(BridgeApi.class);
-        if(lat ==null || longi == null){
-            Toast.makeText(this,"Enable location to get nearby stores",Toast.LENGTH_SHORT)
-                    .show();
-        }else {
-            Call<ArrayList<Shop>> call = bridgeApi.loadShops(lat,longi);
-            call.enqueue(this);
-        }
 
 
+        ShopFragment fragment = new ShopFragment();
+        Bundle args = new Bundle();
+        args.putParcelableArrayList("Shops", mShops);
+        fragment.setArguments(args);
 
         // Initializing and adding fragments
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragment_container,new ShopFragment()).commit();
+                .add(R.id.fragment_container,fragment).commit();
 
 
 
@@ -167,8 +168,14 @@ public class MainActivity extends AppCompatActivity implements
         }
 
             Location l = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            if(l!=null)
-            Log.d(TAG, l.getLatitude() + " "+ l.getLongitude());
+            if(l!=null){
+                lat =l.getLatitude();
+                longi = l.getLongitude();
+                    Call<ArrayList<Shop>> call = bridgeApi.loadShops(lat,longi);
+                    call.enqueue(this);
+
+            }
+
     }
 
     @Override
@@ -293,7 +300,8 @@ public class MainActivity extends AppCompatActivity implements
         if (mGoogleApiClient.isConnected()) {
             Log.d(TAG, "Un-subscribing…");
 
-            //mGoogleApiClient.disconnect();
+            mGoogleApiClient.disconnect();
+
         }
     }
 
@@ -313,12 +321,18 @@ public class MainActivity extends AppCompatActivity implements
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         switch(position){
             case 0:
-                transaction.replace(R.id.fragment_container, new ShopFragment());
+                ShopFragment fragment = new ShopFragment();
+                Bundle args = new Bundle();
+                args.putParcelableArrayList("Shops", mShops);
+                fragment.setArguments(args);
+                tabPosition = 0;
+                transaction.replace(R.id.fragment_container, fragment);
                 transaction.addToBackStack(null);
                 transaction.commit();
                 Log.d(TAG, "Stores selected");
                 break;
             case 1:
+                tabPosition = 1;
                 transaction.replace(R.id.fragment_container, new DealsFragment());
                 transaction.addToBackStack(null);
                 transaction.commit();
@@ -340,12 +354,28 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onResponse(Call<ArrayList<Shop>> call, Response<ArrayList<Shop>> response) {
+        mShops = response.body();
+        if(tabPosition==0) {
 
+            ShopFragment fragment = new ShopFragment();
+            Bundle args = new Bundle();
+            args.putParcelableArrayList("Shops", mShops);
+            fragment.setArguments(args);
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+            // Replace whatever is in the fragment_container view with this fragment,
+            // and add the transaction to the back stack so the user can navigate back
+            transaction.replace(R.id.fragment_container, fragment);
+            transaction.addToBackStack(null);
+
+            // Commit the transaction
+            transaction.commit();
+        }
     }
 
     @Override
     public void onFailure(Call<ArrayList<Shop>> call, Throwable t) {
-
+        Log.d(TAG, t.getMessage());
     }
 
 

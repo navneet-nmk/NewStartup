@@ -9,17 +9,14 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.teenvan.newstartup.R;
-import com.teenvan.typefacelibrary.Typito;
-import com.teenvan.typefacelibrary.TypefaceSetter;
 
 /**
  * Created by navneet on 05/02/16.
  */
-public class FirstFragment extends Fragment {
+public class SecondFragment extends Fragment {
 
     // Declaration of member variables
-    @TypefaceSetter(path = "fonts/ProximaNova-Reg.otf") TextView mAppTitle;
-
+    private TextView mAppTitle;
 
     @Nullable
     @Override
@@ -29,7 +26,6 @@ public class FirstFragment extends Fragment {
 
         // Referencing the UI elements
         mAppTitle = (TextView)rootView.findViewById(R.id.appTitle);
-        Typito.typefaceSetterForFragments(getActivity(),this);
 
     return rootView;
 

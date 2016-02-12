@@ -39,16 +39,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 /**
  * Created by navneet on 05/02/16.
  */
-public class ShopFragment extends Fragment implements Callback<ArrayList<Shop>> {
+public class ShopFragment extends Fragment {
 
     // Declaration of member variables
     private RecyclerView mShopsList;
-    private ArrayList<Shop> mShops;
-    private static final String baseUrl = "https://bridge-startup.herokuapp.com/api/";
-    private static final String TAG = ShopFragment.class.getSimpleName();
-    private Double lat = 26.67,longi= 78.75;
-    private BridgeApi bridgeApi;
-    private Context context = getActivity();
+    private ArrayList<Shop> mShops = new ArrayList<>();
+
 
     @Nullable
     @Override
@@ -56,7 +52,8 @@ public class ShopFragment extends Fragment implements Callback<ArrayList<Shop>> 
                              @Nullable Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup)inflater.inflate(R.layout.fragment_shops, container,false);
 
-
+        Bundle arguments = getArguments();
+        mShops = arguments.getParcelableArrayList("Shops");
 
         //add cache to the client
 
@@ -68,28 +65,17 @@ public class ShopFragment extends Fragment implements Callback<ArrayList<Shop>> 
         mShopsList.setHasFixedSize(true);
 
         // Setting the adapter
-
+        if(!mShops.isEmpty()){
+            ShopListAdapter adapter = new ShopListAdapter(mShops, getActivity());
+            mShopsList.setAdapter(adapter);
+        }
 
 
     return rootView;
 
     }
 
-    @Override
-    public void onResponse(Call<ArrayList<Shop>> call, Response<ArrayList<Shop>> response) {
-        Log.d(TAG,"Api called");
-        Log.d(TAG, response.toString()+ " "+ response.body().toString());
-        Log.d(TAG, call.toString());
-        mShops = response.body();
-        Log.d(TAG, mShops.get(0).getName());
-        ShopListAdapter adapter = new ShopListAdapter(mShops,getActivity());
-        mShopsList.setAdapter(adapter);
-    }
 
-    @Override
-    public void onFailure(Call<ArrayList<Shop>> call, Throwable t) {
-        Log.d(TAG,t.getMessage()+ t.getLocalizedMessage());
-    }
 
 
 

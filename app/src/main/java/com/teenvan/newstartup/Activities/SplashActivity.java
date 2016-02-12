@@ -20,6 +20,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.teenvan.newstartup.Fragments.FirstFragment;
+import com.teenvan.newstartup.Fragments.SecondFragment;
 import com.teenvan.newstartup.Fragments.ZoomOutPageTransformer;
 import com.teenvan.newstartup.R;
 
@@ -134,7 +135,17 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
 
         @Override
         public Fragment getItem(int position) {
-            return new FirstFragment();
+            switch (position) {
+                case 0:
+                    return new FirstFragment();
+                case 1:
+                    return new SecondFragment();
+                case 2:
+                    return new SecondFragment();
+
+            }
+            return null;
+
         }
 
         @Override
