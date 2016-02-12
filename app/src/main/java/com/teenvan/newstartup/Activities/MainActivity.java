@@ -45,6 +45,7 @@ import com.teenvan.newstartup.Api.BridgeApi;
 import com.teenvan.newstartup.Fragments.DealsFragment;
 import com.teenvan.newstartup.Fragments.FirstFragment;
 import com.teenvan.newstartup.Fragments.ShopFragment;
+import com.teenvan.newstartup.Model.Deal;
 import com.teenvan.newstartup.Model.Shop;
 import com.teenvan.newstartup.R;
 import com.teenvan.typefacelibrary.TypefaceSetter;
@@ -82,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements
     private Double lat = 26.67,longi= 78.75;
     private BridgeApi bridgeApi;
     private ArrayList<Shop> mShops = new ArrayList<>();
+    private ArrayList<Deal> mDeals = new ArrayList<>();
     private int tabPosition = 0;
 
 
@@ -113,6 +115,35 @@ public class MainActivity extends AppCompatActivity implements
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         bridgeApi= retrofit.create(BridgeApi.class);
+
+        Call<ArrayList<Deal>> call = bridgeApi.loadDeals();
+        call.enqueue(new Callback<ArrayList<Deal>>() {
+            @Override
+            public void onResponse(Call<ArrayList<Deal>> call, Response<ArrayList<Deal>> response) {
+                mDeals = response.body();
+                if(tabPosition==1) {
+
+                    DealsFragment fragment = new DealsFragment();
+                    Bundle args = new Bundle();
+                    args.putParcelableArrayList("Deals", mDeals);
+                    fragment.setArguments(args);
+                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+                    // Replace whatever is in the fragment_container view with this fragment,
+                    // and add the transaction to the back stack so the user can navigate back
+                    transaction.replace(R.id.fragment_container, fragment);
+                    transaction.addToBackStack(null);
+
+                    // Commit the transaction
+                    transaction.commit();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<Deal>> call, Throwable t) {
+                Log.d(TAG, t.getMessage());
+            }
+        });
 
 
         ShopFragment fragment = new ShopFragment();
@@ -325,14 +356,16 @@ public class MainActivity extends AppCompatActivity implements
                 transaction.replace(R.id.fragment_container, fragment);
                 transaction.addToBackStack(null);
                 transaction.commit();
-                Log.d(TAG, "Stores selected");
                 break;
             case 1:
+                DealsFragment dealsFragment = new DealsFragment();
+                Bundle dealArgs = new Bundle();
+                dealArgs.putParcelableArrayList("Deals", mDeals);
+                dealsFragment.setArguments(dealArgs);
                 tabPosition = 1;
-                transaction.replace(R.id.fragment_container, new DealsFragment());
+                transaction.replace(R.id.fragment_container, dealsFragment);
                 transaction.addToBackStack(null);
                 transaction.commit();
-                Log.d(TAG, " Deals selected");
                 break;
 
         }
@@ -375,25 +408,6 @@ public class MainActivity extends AppCompatActivity implements
         Log.d(TAG, t.getMessage());
     }
 
-
-    private final Interceptor REWRITE_CACHE_CONTROL_INTERCEPTOR = new Interceptor() {
-        @Override
-        public okhttp3.Response intercept(Chain chain) throws IOException {
-            okhttp3.Response originalResponse = chain.proceed(chain.request());
-            if (isNetworkAvailable()) {
-                int maxAge = 60; // read from cache for 1 minute
-                return originalResponse.newBuilder()
-                        .header("Cache-Control", "public, max-age=" + maxAge)
-                        .build();
-            } else {
-                int maxStale = 60 * 60 * 24 * 28; // tolerate 4-weeks stale
-                return originalResponse.newBuilder()
-                        .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
-                        .build();
-            }
-        }
-
-    };
 
     public boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager)
