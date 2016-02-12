@@ -1,5 +1,6 @@
 package com.teenvan.newstartup.Api;
 
+import com.teenvan.newstartup.Model.Deal;
 import com.teenvan.newstartup.Model.Shop;
 
 import java.util.ArrayList;
@@ -16,4 +17,7 @@ public interface BridgeApi {
     @GET("shops")
     Call<ArrayList<Shop>> loadShops(@Query("latitude") Double latitude,
                                     @Query("longitude") Double longitude);
+
+    @GET("deals")
+    Call<ArrayList<Deal>> loadDeals();
 }

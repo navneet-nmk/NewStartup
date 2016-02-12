@@ -1,6 +1,7 @@
 package com.teenvan.newstartup.Activities;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -19,7 +20,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Window;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -64,7 +67,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class MainActivity extends AppCompatActivity implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, TabLayout.OnTabSelectedListener, Callback<ArrayList<Shop>> {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
+        TabLayout.OnTabSelectedListener, Callback<ArrayList<Shop>> {
 
     // Declaration of member variables
     private GoogleApiClient mGoogleApiClient;
@@ -77,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final String baseUrl = "https://bridge-startup.herokuapp.com/api/";
     private Double lat = 26.67,longi= 78.75;
     private BridgeApi bridgeApi;
-    private ArrayList<Shop> mShops;
+    private ArrayList<Shop> mShops = new ArrayList<>();
     private int tabPosition = 0;
 
 
@@ -100,18 +104,8 @@ public class MainActivity extends AppCompatActivity implements
         mTabLayout.addTab(mTabLayout.newTab().setText("Stores"));
         mTabLayout.addTab(mTabLayout.newTab().setText("Deals"));
 
+
         mTabLayout.setOnTabSelectedListener(this);
-
-
-
-        //setup cache
-        File httpCacheDirectory = new File(getCacheDir(), "responses");
-        int cacheSize = 10 * 1024 * 1024; // 10 MiB
-        Cache cache = new Cache(httpCacheDirectory, cacheSize);
-
-        OkHttpClient client = new OkHttpClient.Builder().cache(cache)
-               .build();
-        client.networkInterceptors().add(REWRITE_CACHE_CONTROL_INTERCEPTOR);
 
         //Initialize Retrofit
         Retrofit retrofit = new Retrofit.Builder()
@@ -137,6 +131,11 @@ public class MainActivity extends AppCompatActivity implements
     private MessageListener mMessageListener = new MessageListener() {
         @Override
         public void onFound(Message message) {
+            // Show a dialog to the User
+            Dialog d = new Dialog(MainActivity.this);
+            d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            d.setContentView(R.layout.dialog_layout);
+            d.show();
             Log.d(TAG, message.toString());
         }
     };

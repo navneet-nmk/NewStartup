@@ -20,10 +20,8 @@ public class Typito {
 
         AssetManager assetManager = activity.getAssets();
         Field[] fields = activity.getClass().getDeclaredFields();
-        Log.d(TAG, fields.length+ "");
 
         for(Field field: fields){
-            Log.d(TAG,field.getName());
             field.setAccessible(true);
             try{
                 Class<?> cl = field.getType();
@@ -34,13 +32,11 @@ public class Typito {
                     TextView value = (TextView) field.get(activity);
                     Typeface tv = Typeface.createFromAsset(assetManager,path);
                     value.setTypeface(tv);
-                    Log.d(TAG, "Set the text typeface");
                 }
                 if(Button.class.isAssignableFrom(cl)){
                     Button value = (Button)field.get(activity);
                     Typeface tv = Typeface.createFromAsset(assetManager,path);
                     value.setTypeface(tv);
-                    Log.d(TAG, "Set the button typeface");
                 }
 
             }
@@ -53,7 +49,6 @@ public class Typito {
     public static void typefaceSetterForFragments(Activity activity, Fragment fragment)  {
         AssetManager assetManager = activity.getAssets();
         Field[] fields = fragment.getClass().getDeclaredFields();
-        Log.d(TAG, fields.length+ "");
 
         for(Field field : fields){
             Log.d(TAG, field.getName());
@@ -71,14 +66,12 @@ public class Typito {
                     assert setter != null;
                     Typeface tv = Typeface.createFromAsset(assetManager,setter.path());
                     value.setTypeface(tv);
-                    Log.d(TAG, "Set the text typeface");
                 }
                 if(Button.class.isAssignableFrom(cl)){
                     Button value = (Button)field.get(fragment);
                     assert setter != null;
                     Typeface tv = Typeface.createFromAsset(assetManager,setter.path());
                     value.setTypeface(tv);
-                    Log.d(TAG, "Set the button typeface");
                 }
 
             }
@@ -91,10 +84,8 @@ public class Typito {
     public static void typefaceSetterForActivity(Activity activity){
         AssetManager assetManager = activity.getAssets();
         Field[] fields = activity.getClass().getDeclaredFields();
-        Log.d(TAG, fields.length+ "");
 
         for(Field field: fields){
-            Log.d(TAG,field.getName());
             field.setAccessible(true);
             TypefaceSetter setter = field.getAnnotation(TypefaceSetter.class);
             try{
@@ -106,13 +97,11 @@ public class Typito {
                     TextView value = (TextView) field.get(activity);
                     Typeface tv = Typeface.createFromAsset(assetManager,setter.path());
                     value.setTypeface(tv);
-                    Log.d(TAG, "Set the text typeface");
                 }
                 if(Button.class.isAssignableFrom(cl)){
                     Button value = (Button)field.get(activity);
                     Typeface tv = Typeface.createFromAsset(assetManager, setter.path());
                     value.setTypeface(tv);
-                    Log.d(TAG,"Set the button typeface");
                 }
 
             }
@@ -126,10 +115,8 @@ public class Typito {
                                                   String path)  {
         AssetManager assetManager = activity.getAssets();
         Field[] fields = fragment.getClass().getDeclaredFields();
-        Log.d(TAG, fields.length+ "");
 
         for(Field field : fields){
-            Log.d(TAG, field.getName());
             field.setAccessible(true);
             try{
                 Class<?> cl = field.getType();
@@ -140,13 +127,11 @@ public class Typito {
                     TextView value = (TextView) field.get(fragment);
                     Typeface tv = Typeface.createFromAsset(assetManager,path);
                     value.setTypeface(tv);
-                    Log.d(TAG, "Set the text typeface");
                 }
                 if(Button.class.isAssignableFrom(cl)){
                     Button value = (Button)field.get(fragment);
                     Typeface tv = Typeface.createFromAsset(assetManager,path);
                     value.setTypeface(tv);
-                    Log.d(TAG,"Set the button typeface");
                 }
 
             }
