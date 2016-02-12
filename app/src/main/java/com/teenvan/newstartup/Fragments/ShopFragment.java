@@ -43,7 +43,7 @@ public class ShopFragment extends Fragment {
 
     // Declaration of member variables
     private RecyclerView mShopsList;
-    private ArrayList<Shop> mShops = new ArrayList<>();
+    private ArrayList<Shop> mShops;
 
 
     @Nullable

@@ -3,6 +3,7 @@ package com.teenvan.newstartup.Fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,16 +17,17 @@ import com.teenvan.newstartup.R;
 public class DealsFragment extends Fragment {
 
     // Declaration of member variables
-    private TextView mAppTitle;
+    private RecyclerView mDealsList;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        ViewGroup rootView = (ViewGroup)inflater.inflate(R.layout.fragment_page_one, container,false);
+        ViewGroup rootView = (ViewGroup)inflater.inflate(R.layout.fragment_deals, container,false);
 
         // Referencing the UI elements
-        mAppTitle = (TextView)rootView.findViewById(R.id.appTitle);
+        mDealsList = (RecyclerView)rootView.findViewById(R.id.dealsList);
+
     return rootView;
 
     }

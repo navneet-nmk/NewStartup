@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final String baseUrl = "https://bridge-startup.herokuapp.com/api/";
     private Double lat = 26.67,longi= 78.75;
     private BridgeApi bridgeApi;
-    private ArrayList<Shop> mShops = new ArrayList<>();
+    private ArrayList<Shop> mShops;
     private int tabPosition = 0;
 
 
@@ -109,15 +109,12 @@ public class MainActivity extends AppCompatActivity implements
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
         Cache cache = new Cache(httpCacheDirectory, cacheSize);
 
-        OkHttpClient client = new OkHttpClient.Builder().cache(cache).
-                addInterceptor(REWRITE_CACHE_CONTROL_INTERCEPTOR).build();
-
-
-
+        OkHttpClient client = new OkHttpClient.Builder().cache(cache)
+               .build();
+        client.networkInterceptors().add(REWRITE_CACHE_CONTROL_INTERCEPTOR);
 
         //Initialize Retrofit
         Retrofit retrofit = new Retrofit.Builder()
-                .client(client)
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
@@ -354,6 +351,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onResponse(Call<ArrayList<Shop>> call, Response<ArrayList<Shop>> response) {
+        mShops =new ArrayList<>(response.body().size());
         mShops = response.body();
         if(tabPosition==0) {
 
