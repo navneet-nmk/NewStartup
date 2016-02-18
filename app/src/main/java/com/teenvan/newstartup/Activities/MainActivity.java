@@ -41,6 +41,11 @@ import com.google.android.gms.nearby.messages.Strategy;
 import com.google.android.gms.nearby.messages.SubscribeCallback;
 import com.google.android.gms.nearby.messages.SubscribeOptions;
 import com.google.android.gms.nearby.messages.devices.NearbyDevice;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.SaveCallback;
 import com.teenvan.newstartup.Api.BridgeApi;
 import com.teenvan.newstartup.Fragments.DealsFragment;
 import com.teenvan.newstartup.Fragments.FirstFragment;
@@ -56,6 +61,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import okhttp3.Cache;
 import okhttp3.Interceptor;
@@ -69,7 +75,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
-        TabLayout.OnTabSelectedListener, Callback<ArrayList<Shop>> {
+        TabLayout.OnTabSelectedListener {
 
     // Declaration of member variables
     private GoogleApiClient mGoogleApiClient;
@@ -81,7 +87,6 @@ public class MainActivity extends AppCompatActivity implements
     private TabLayout mTabLayout;
     private static final String baseUrl = "https://bridge-startup.herokuapp.com/api/";
     private Double lat = 26.67,longi= 78.75;
-    private BridgeApi bridgeApi;
     private ArrayList<Shop> mShops = new ArrayList<>();
     private ArrayList<Deal> mDeals = new ArrayList<>();
     private int tabPosition = 0;
@@ -93,6 +98,49 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Get the Shops
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Shops");
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if(e == null){
+                    mShops = new ArrayList<Shop>();
+                    if(!objects.isEmpty()){
+                        for(int i=0;i<objects.size();i++){
+                            Shop shop = new Shop();
+                            shop.setName(objects.get(i).getString("name"));
+                            shop.setAddress(objects.get(i).getString("address"));
+                            shop.setImageUrl(objects.get(i).getString("image"));
+                            shop.setPoints(objects.get(i).getInt("points"));
+                            mShops.add(shop);
+                        }
+                        ShopFragment fragment = new ShopFragment();
+                        Bundle args = new Bundle();
+                        args.putParcelableArrayList("Shops", mShops);
+                        fragment.setArguments(args);
+                        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+                        // Replace whatever is in the fragment_container view with this fragment,
+                        // and add the transaction to the back stack so the user can navigate back
+                        transaction.replace(R.id.fragment_container, fragment);
+                        transaction.addToBackStack(null);
+
+                        // Commit the transaction
+                        transaction.commit();
+
+
+
+                    }
+                }else{
+                    Log.d(TAG, e.getMessage());
+                }
+            }
+        });
+
+        // Get the deals
+
+        ParseQuery<ParseObject> dealsQuery = ParseQuery.getQuery("Deals");
 
 
 
@@ -109,41 +157,6 @@ public class MainActivity extends AppCompatActivity implements
 
         mTabLayout.setOnTabSelectedListener(this);
 
-        //Initialize Retrofit
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        bridgeApi= retrofit.create(BridgeApi.class);
-
-        Call<ArrayList<Deal>> call = bridgeApi.loadDeals();
-        call.enqueue(new Callback<ArrayList<Deal>>() {
-            @Override
-            public void onResponse(Call<ArrayList<Deal>> call, Response<ArrayList<Deal>> response) {
-                mDeals = response.body();
-                if(tabPosition==1) {
-
-                    DealsFragment fragment = new DealsFragment();
-                    Bundle args = new Bundle();
-                    args.putParcelableArrayList("Deals", mDeals);
-                    fragment.setArguments(args);
-                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
-                    // Replace whatever is in the fragment_container view with this fragment,
-                    // and add the transaction to the back stack so the user can navigate back
-                    transaction.replace(R.id.fragment_container, fragment);
-                    transaction.addToBackStack(null);
-
-                    // Commit the transaction
-                    transaction.commit();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ArrayList<Deal>> call, Throwable t) {
-                Log.d(TAG, t.getMessage());
-            }
-        });
 
 
         ShopFragment fragment = new ShopFragment();
@@ -154,6 +167,7 @@ public class MainActivity extends AppCompatActivity implements
         // Initializing and adding fragments
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fragment_container,fragment).commit();
+
 
 
 
@@ -198,8 +212,7 @@ public class MainActivity extends AppCompatActivity implements
             if(l!=null){
                 lat =l.getLatitude();
                 longi = l.getLongitude();
-                    Call<ArrayList<Shop>> call = bridgeApi.loadShops(lat,longi);
-                    call.enqueue(this);
+
 
             }
 
@@ -381,32 +394,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-    @Override
-    public void onResponse(Call<ArrayList<Shop>> call, Response<ArrayList<Shop>> response) {
-        mShops =new ArrayList<>(response.body().size());
-        mShops = response.body();
-        if(tabPosition==0) {
-
-            ShopFragment fragment = new ShopFragment();
-            Bundle args = new Bundle();
-            args.putParcelableArrayList("Shops", mShops);
-            fragment.setArguments(args);
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
-            // Replace whatever is in the fragment_container view with this fragment,
-            // and add the transaction to the back stack so the user can navigate back
-            transaction.replace(R.id.fragment_container, fragment);
-            transaction.addToBackStack(null);
-
-            // Commit the transaction
-            transaction.commit();
-        }
-    }
-
-    @Override
-    public void onFailure(Call<ArrayList<Shop>> call, Throwable t) {
-        Log.d(TAG, t.getMessage());
-    }
 
 
     public boolean isNetworkAvailable() {

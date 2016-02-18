@@ -19,6 +19,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseUser;
+import com.parse.SignUpCallback;
 import com.teenvan.newstartup.Fragments.FirstFragment;
 import com.teenvan.newstartup.Fragments.SecondFragment;
 import com.teenvan.newstartup.Fragments.ZoomOutPageTransformer;
@@ -52,6 +56,13 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        // Initializing the Parse Database Connector
+        Parse.initialize(new Parse.Configuration.Builder(this)
+                        .applicationId("0123456789")
+                        .clientKey("0123456789")
+                        .server("https://bridge-startup.herokuapp.com/parse/")
+                        .build());
+
 
 
         // Referencing the UI elements
@@ -67,8 +78,21 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
         mLoginWithFacebook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-                startActivity(intent);
+                ParseUser user = new ParseUser();
+                user.setUsername("Navneet Kumar Rathore");
+                user.setPassword("android");
+                user.signUpInBackground(new SignUpCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if(e == null){
+                            Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+                            startActivity(intent);
+                        }else{
+                          Log.d(TAG, e.getMessage());
+                        }
+                    }
+                });
+
             }
         });
 

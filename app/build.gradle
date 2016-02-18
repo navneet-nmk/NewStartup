@@ -58,6 +58,9 @@ dependencies {
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
 
     compile project(':typito')
+
+    //Parse SDK
+    compile 'com.parse:parse-android:1.13.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

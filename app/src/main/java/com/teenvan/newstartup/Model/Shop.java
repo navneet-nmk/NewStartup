@@ -27,6 +27,10 @@ public class Shop implements Parcelable {
         return image;
     }
 
+    public void setImageUrl(String url){
+        image = url;
+    }
+
     public String getName() {
         return name;
     }
@@ -50,6 +54,10 @@ public class Shop implements Parcelable {
 
     public void setDistance(Double distance) {
         this.distance = distance;
+    }
+
+    public Shop(){
+
     }
 
     protected Shop(Parcel in) {

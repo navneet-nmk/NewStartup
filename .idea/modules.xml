@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/NewStartup.iml" filepath="$PROJECT_DIR$/NewStartup.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/typito/typefacelibrary.iml" filepath="$PROJECT_DIR$/typito/typefacelibrary.iml" />
       <module fileurl="file://$PROJECT_DIR$/typito/typito.iml" filepath="$PROJECT_DIR$/typito/typito.iml" />
     </modules>
   </component>
